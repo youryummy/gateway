@@ -6,7 +6,13 @@ module.exports = {
     middleware: {
         router: { disable: true },
         validator: { strict: true },
-        error: {disable: false, printStackTrace: false, customHandler: null},
+        error: {
+            disable: false, 
+            printStackTrace: false, 
+            customHandler: (err, send) => {
+                if(err.name === "JsonWebTokenError") send(403);
+            }
+        },
         security: { disable: false, auth: {} }
     }
 }

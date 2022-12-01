@@ -80,7 +80,7 @@ Promise.allSettled(
     
     // Add security handlers based on oasDoc secSchemes
     if(Object.values(oasDoc.components.securitySchemes).some(secSchemeDef => secSchemeDef.bearerFormat === "JWT")) {
-        oasTools.use(OASBearerJWT, {roleBinding: process.env.ROLE_BINDING ?? "role"}, 2);
+        oasTools.use(OASBearerJWT, {roleBinding: process.env.JWT_ROLE_BINDING ?? "role"}, 2);
         Object.entries(oasDoc.components.securitySchemes).forEach(([secScheme, secSchemeDef]) => {
             if (secSchemeDef.scheme === "bearer" && secSchemeDef.bearerFormat === "JWT")
                 oasToolsCfg.middleware.security.auth[secScheme] = bearerJwt({issuer: process.env.JWT_ISSUER, secret: process.env.JWT_SECRET});
