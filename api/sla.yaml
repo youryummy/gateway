@@ -1,0 +1,39 @@
+sla: 1.0.0
+context:
+  id: rate-limit-sample
+  type: plans
+  provider: YourYummy
+metrics:
+  requests:
+    type: "int64"
+    description: "Number of requests"
+plans:
+  base:
+    rates:
+      /api/v1/example:
+        get:
+          requests:
+          - max: 1
+            period: second
+        post:
+          requests:
+          - max: 2
+            period: second
+    quotas:
+      /api/v1/example:
+        get:
+          requests:
+          - max: 2
+            period: minute
+      /api/v1/example/{param}:
+        get:
+          requests:
+          - max: 2
+            period: minute
+  premium:     
+    quotas:
+      /api/v1/example:
+        get:
+          requests:
+          - max: 5
+            period: minute
