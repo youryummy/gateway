@@ -6,6 +6,7 @@ module.exports = {
     middleware: {
         router: { disable: true },
         validator: { strict: true },
-        error: {disable: false, printStackTrace: false, customHandler: null}
+        error: {disable: false, printStackTrace: false, customHandler: null},
+        security: { disable: false, auth: {} }
     }
 }

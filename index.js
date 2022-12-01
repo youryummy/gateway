@@ -5,7 +5,7 @@ const http = require('http');
 const jsyaml = require("js-yaml");
 const express = require("express");
 const oasTools = require("@oas-tools/core");
-const {spawnSync} = require("node:child_process");
+const { spawnSync } = require("node:child_process");
 
 // Get network ID
 const info = JSON.parse(spawnSync("ip", ["-j", "route"]).stdout).filter(route => route.dst !== "default");
@@ -51,21 +51,26 @@ Promise.allSettled(
     .reduce((acc, curr) => {
         acc.paths = _.merge(acc.paths, curr.paths);
         acc.components = _.merge(acc.components, curr.components);
+        if (curr.security?.length > 0) acc.security = _.merge(acc.security ?? [], curr.security);
         return acc;
     }, 
     {   // Initial doc value
         openapi: "3.0.3",
         info: { title: "YourYummy!", description: "The social network for cookers", version: "1.0.0"},
         paths: {},
-        components: {schemas: {}, securitySchemes: {}}
+        components: {}
     });
-}).then(oasDoc => {
+}).then(async oasDoc => {
     console.log("Initializing server") // TODO if changes detected
+
+    // Import JWT handlers from OAS Auth
+    const { bearerJwt } = await import("@oas-tools/auth/handlers");
+    const { OASBearerJWT } = await import("@oas-tools/auth/middleware");
 
     // Create /api/oas-doc.yaml
     fs.writeFileSync(path.join(__dirname, "api", "oas-doc.yaml"), jsyaml.dump(oasDoc));
 
-    // Initialize oas tools server
+    // Configure express for oas tools server
     const oasToolsCfg = require("./oastools.config");
     const oasProxy = require("./oasproxy");
     const app = express();
@@ -73,6 +78,16 @@ Promise.allSettled(
     app.use(express.json({limit: '50mb'}));
     oasTools.use(oasProxy, {}, 4);
     
+    // Add security handlers based on oasDoc secSchemes
+    if(Object.values(oasDoc.components.securitySchemes).some(secSchemeDef => secSchemeDef.bearerFormat === "JWT")) {
+        oasTools.use(OASBearerJWT, {roleBinding: process.env.ROLE_BINDING ?? "role"}, 2);
+        Object.entries(oasDoc.components.securitySchemes).forEach(([secScheme, secSchemeDef]) => {
+            if (secSchemeDef.scheme === "bearer" && secSchemeDef.bearerFormat === "JWT")
+                oasToolsCfg.middleware.security.auth[secScheme] = bearerJwt({issuer: process.env.JWT_ISSUER, secret: process.env.JWT_SECRET});
+        })
+    }
+    
+    // Initialize oas tools
     oasTools.initialize(app, oasToolsCfg).then(() => {
         http.createServer(app).listen(8080, () => {
             console.log("Server is up")
