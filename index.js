@@ -63,9 +63,10 @@ Promise.allSettled(
 }).then(async oasDoc => {
     console.log("Initializing server") // TODO if changes detected
 
-    // Import JWT handlers from OAS Auth
+    // Import handlers from OAS Auth and SLA Rate Limit
     const { bearerJwt } = await import("@oas-tools/auth/handlers");
     const { OASBearerJWT } = await import("@oas-tools/auth/middleware");
+    const { SLARateLimit } = await import("@oas-tools/sla-rate-limit");
 
     // Create /api/oas-doc.yaml
     fs.writeFileSync(path.join(__dirname, "api", "oas-doc.yaml"), jsyaml.dump(oasDoc));
@@ -76,10 +77,11 @@ Promise.allSettled(
     const app = express();
 
     app.use(express.json({limit: '50mb'}));
-    oasTools.use(oasProxy, {}, 4);
+    oasTools.use(SLARateLimit, {scheme: process.env.SLA_SEC_SCHEME ?? "apikey", slaFile: "api/sla.yaml"}, 2);
+    oasTools.use(oasProxy, {}, 5);
     
     // Add security handlers based on oasDoc secSchemes
-    if(Object.values(oasDoc.components.securitySchemes).some(secSchemeDef => secSchemeDef.bearerFormat === "JWT")) {
+    if(Object.values(oasDoc.components.securitySchemes ?? {}).some(secSchemeDef => secSchemeDef.bearerFormat === "JWT")) {
         oasTools.use(OASBearerJWT, {roleBinding: process.env.JWT_ROLE_BINDING ?? "role"}, 2);
         Object.entries(oasDoc.components.securitySchemes).forEach(([secScheme, secSchemeDef]) => {
             if (secSchemeDef.scheme === "bearer" && secSchemeDef.bearerFormat === "JWT")
