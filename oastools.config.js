@@ -1,7 +1,7 @@
 module.exports = {
     oasFile: "./api/oas-doc.yaml",
     logger: {
-        level: "debug"
+        level: "info"
     },
     middleware: {
         router: { disable: true },
