@@ -12,7 +12,7 @@ const exec = util.promisify(require('node:child_process').exec);
 const info = JSON.parse(spawnSync("ip", ["-j", "route"]).stdout).filter(route => route.dst !== "default");
 const netId = info[0].dst;
 
-// Scan network and deploy oas tools server
+// Scan network and update oas tools routes
 async function updateRoutes() {
     
     // Discover services through ICMP and ARP 
