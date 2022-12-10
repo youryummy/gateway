@@ -41,7 +41,7 @@ async function updateRoutes() {
                     let paths = Object.entries(oasDoc.paths);
                     paths = Object.fromEntries(paths.map(([endp, pathObj]) => {
                         let ops = Object.entries(pathObj).filter(([op, _opObj]) => ["get", "post", "put", "delete", "patch", "head", "options", "trace"].includes(op));
-                        pathObj = Object.fromEntries(ops.map(([op, opObj]) => [op, {["x-proxy-url"]: `http://${ip}`, tags: [oasDoc.info?.title ?? "default"], ...opObj}]));
+                        pathObj = Object.fromEntries(ops.map(([op, opObj]) => [op, {...opObj, ["x-proxy-url"]: `http://${ip}`, tags: [oasDoc.info?.title ?? "default"]}]));
                         return [endp.replace(/:.+?(?=\/|$)/g, (m) => `{${m.substring(1)}}`), pathObj]; // The replace function modifies express path to be an open api path
                     }))
                     oasDoc.paths = paths;

@@ -43,7 +43,7 @@ module.exports = class OASProxy extends OASBase {
                 proxyRes.once("end", async () => {
                     try {
                         if (data.length > 0 ) res.send(JSON.parse(Buffer.concat(data).toString()));
-                        else res.send();
+                        else proxyRes.pipe(res);
                     } catch (err) {
                         res.statusMessage = "Internal Server Error";
                         next(err);
