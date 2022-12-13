@@ -7,6 +7,7 @@ deploy:
     --set global.node_env="production"
     --set global.jwt_secret=${JWT_SECRET}
     --set global.jwt_issuer=${JWT_ISSUER}
+    --set global.namespaceOverride=${NAMESPACE}
     --set gateway.image=${OKTETO_BUILD_GATEWAY_IMAGE}
 
 dev:
