@@ -5,10 +5,13 @@ metadata:
     app: youryummy-{{ .Chart.Name }}
   name: youryummy-{{ .Chart.Name }}
   namespace: {{ if .Values.global.namespaceOverride }}{{.Values.global.namespaceOverride}}{{ else }}youryummy{{ end }}
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
 spec:
   {{- if eq .Values.global.node_env "development" }}
   type: NodePort
   {{- end }}
+  clusterIP: 10.152.0.2
   ports:
     - name: youryummy-{{ .Chart.Name }}
       port: 80

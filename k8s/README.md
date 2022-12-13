@@ -12,6 +12,7 @@ Optional values:
 * global.namespaceOverride - Override the default namespace
 * jwt_role_binding - Attribute in the JWT payload representing the role (default: role)
 * sla_sec_scheme - Security Scheme declared in OAS Doc to be used for rate limiting (default: apikey)
+* ip_range - range of IPs to scan, required when deploying on okteto
 * image - Docker image that will run inside the pod (default: "youryummy-account-service:latest")
 
 ## Setup development environment with HELM

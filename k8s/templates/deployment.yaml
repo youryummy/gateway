@@ -22,6 +22,8 @@ spec:
             value: "80"
           - name: SLA_SEC_SCHEME
             value: {{ (index .Values .Chart.Name).sla_sec_scheme | default .Values.sla_sec_scheme }}
+          - name: IP_RANGE
+            value: {{ (index .Values .Chart.Name).ip_range | default .Values.ip_range }}
           - name: JWT_SECRET
             valueFrom:
               secretKeyRef:

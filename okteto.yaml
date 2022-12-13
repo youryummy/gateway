@@ -8,6 +8,7 @@ deploy:
     --set global.jwt_secret=${JWT_SECRET}
     --set global.jwt_issuer=${JWT_ISSUER}
     --set global.namespaceOverride=${NAMESPACE}
+    --set gateway.ip_range=${IP_RANGE}
     --set gateway.image=${OKTETO_BUILD_GATEWAY_IMAGE}
 
 dev:
