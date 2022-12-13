@@ -1,0 +1,6 @@
+global:
+  node_env: production
+
+image: youryummy-gateway:latest
+jwt_role_binding: role
+sla_sec_scheme: apikey

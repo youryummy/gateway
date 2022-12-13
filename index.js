@@ -134,7 +134,7 @@ router.all("/*", (_req, res, _next) => res.status(502).end());
 const app = express();
 app.use((req, res, next) => router(req, res, next));
 
-http.createServer(app).listen(8080, () => {
+http.createServer(app).listen(process.env.PORT ?? 8080, () => {
     console.log("Server is up");
 
     // Update routes periodically (2 min)

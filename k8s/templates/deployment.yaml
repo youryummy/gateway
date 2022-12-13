@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: youryummy-{{ .Chart.Name }}
+  name: youryummy-{{ .Chart.Name }}
+  namespace: {{ if .Values.global.namespaceOverride }}{{.Values.global.namespaceOverride}}{{ else }}youryummy{{ end }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: youryummy-{{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: youryummy-{{ .Chart.Name }}
+    spec:
+      containers:
+        - env:
+          - name: PORT
+            value: "80"
+          - name: SLA_SEC_SCHEME
+            value: {{ (index .Values .Chart.Name).sla_sec_scheme | default .Values.sla_sec_scheme }}
+          - name: JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: JWT_SECRET
+          - name: JWT_ISSUER
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: JWT_ISSUER
+          - name: JWT_ROLE_BINDING
+            valueFrom:
+              secretKeyRef:
+                  name: youryummy-{{ .Chart.Name }}-secrets
+                  key: JWT_ROLE_BINDING
+
+          image: {{ (index .Values .Chart.Name).image | default .Values.image }}
+          imagePullPolicy: IfNotPresent
+          name: youryummy-{{ .Chart.Name }}
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              memory: 300Mi
+            limits:
+              memory: 400Mi
+      securityContext: {}
