@@ -4,3 +4,4 @@ global:
 image: youryummy-gateway:latest
 jwt_role_binding: role
 sla_sec_scheme: apikey
+dev_node_port: 30000

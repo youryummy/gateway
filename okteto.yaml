@@ -4,15 +4,9 @@ build:
 
 deploy:
   - helm upgrade --install gateway k8s
-    --set global.node_env="production"
+    --set global.node_env=${NODE_ENV}
     --set global.jwt_secret=${JWT_SECRET}
     --set global.jwt_issuer=${JWT_ISSUER}
     --set global.namespaceOverride=${NAMESPACE}
     --set gateway.ip_range=${IP_RANGE}
     --set gateway.image=${OKTETO_BUILD_GATEWAY_IMAGE}
-
-dev:
-  gateway:
-    command: ["node", "index.js"]
-    sync:
-      - .:/opt/app

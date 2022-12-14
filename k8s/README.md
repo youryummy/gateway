@@ -14,6 +14,7 @@ Optional values:
 * sla_sec_scheme - Security Scheme declared in OAS Doc to be used for rate limiting (default: apikey)
 * ip_range - range of IPs to scan, required when deploying on okteto
 * image - Docker image that will run inside the pod (default: "youryummy-account-service:latest")
+* dev_node_port - (DEV ONLY) Port to which NodePort service will be binded (default: 30000)
 
 ## Setup development environment with HELM
 1.- Prerequisites
