@@ -8,7 +8,7 @@ module.exports = {
         validator: { strict: true },
         error: {
             disable: false, 
-            printStackTrace: false, 
+            printStackTrace: process.env.NODE_ENV !== "production",
             customHandler: (err, send) => {
                 if(err.name === "JsonWebTokenError") send(403);
             }

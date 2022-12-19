@@ -2,6 +2,7 @@ const fs = require("fs");
 const _ = require("lodash");
 const path = require("path");
 const http = require('http');
+const multer = require("multer");
 const util = require("node:util");
 const jsyaml = require("js-yaml");
 const express = require("express");
@@ -89,8 +90,20 @@ async function updateRoutes() {
                 // Configure express for oas tools server
                 const oasToolsCfg = require("./oastools.config");
                 const oasProxy = require("./oasproxy");
-    
+                
+                // Multipart requests
+                router.use(multer().any());
                 router.use(express.json({limit: '50mb'}));
+                router.use((req, _res, next) => {
+                    if (req.is("multipart/form-data")) {
+                        if (req.files?.length === 1 && !req.file) req.file = req.files[0];
+                        Object.entries(req.body ?? {}).forEach(([key, val]) => {
+                            if(typeof val === "string") req.body[key] = val.length > 0 ? JSON.parse(val) : undefined;
+                        });
+                    }
+                    next();
+                });
+
                 use(SLARateLimit, {scheme: process.env.SLA_SEC_SCHEME ?? "apikey", slaFile: "api/sla.yaml"}, 2);
                 use(oasProxy, {}, 5);
                 
