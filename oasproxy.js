@@ -28,7 +28,7 @@ module.exports = class OASProxy extends OASBase {
                         options: {
                             filename: file.originalname
                         }
-                    } : JSON.stringify(val)
+                    } : (val ? JSON.stringify(val) : "")
                     
                 });
                 req.formData = formData;
