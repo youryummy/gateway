@@ -144,7 +144,10 @@ let router = express.Router();
 router.all("/*", (_req, res, _next) => res.status(502).end());
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: [/\localhost/, /\.vercel\.app$/],
+    credentials: true
+}));
 
 // Sets the authorization header based on the cookie token
 app.use((req, _res, next) => {
