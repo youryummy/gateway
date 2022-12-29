@@ -2,6 +2,7 @@ const fs = require("fs");
 const _ = require("lodash");
 const path = require("path");
 const http = require('http');
+const cors = require("cors");
 const multer = require("multer");
 const util = require("node:util");
 const jsyaml = require("js-yaml");
@@ -143,6 +144,7 @@ let router = express.Router();
 router.all("/*", (_req, res, _next) => res.status(502).end());
 
 const app = express();
+app.use(cors());
 
 // Sets the authorization header based on the cookie token
 app.use((req, _res, next) => {
