@@ -145,7 +145,7 @@ router.all("/*", (_req, res, _next) => res.status(502).end());
 
 const app = express();
 app.use(cors({
-    origin: [/\localhost/, /\.vercel\.app$/],
+    origin: [/\localhost/, /\.cloud\.okteto\.net$/],
     credentials: true
 }));
 
