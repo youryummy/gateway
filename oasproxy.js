@@ -60,7 +60,30 @@ module.exports = class OASProxy extends OASBase {
                     const ctype = proxyRes.headers["content-type"];
                     res.statusMessage = proxyRes.statusMessage;
                     Object.entries(proxyRes.headers).forEach(([key, val]) => res.setHeader(key, val));
-                    res.status(proxyRes.statusCode).send(resBody?.length > 0 ? (/application\/json/.test(ctype) ? JSON.parse(resBody) : resBody) : undefined);
+
+                    // If posted or deleted a new resource, refresh the token
+                    if (["post", "delete"].includes(method) && proxyRes.statusCode < 400) {
+                        const authServer = oasFile.paths["/api/v1/refreshToken"]["post"]["x-proxy-url"];
+                        const token = req.headers['authorization']?.split(" ")[1];
+                        if (token && server !== authServer) {
+                            logger.info(`${method.toUpperCase()} received, refreshing token...`)
+                            request({
+                                uri: `${authServer}/api/v1/refreshToken`,
+                                method: "POST",
+                                body: JSON.stringify({token}),
+                                headers: {'Content-Type': "application/json"}
+                            }, 
+                            (err, authRes) => {
+                                if (err || authRes.statusCode >= 400) logger.warn(`Failed to refresh token${err ? `: ${err}` : ""}`);
+                                else res.setHeader("Set-Cookie", authRes.headers["set-cookie"]);
+                                res.status(proxyRes.statusCode).send(resBody?.length > 0 ? (/application\/json/.test(ctype) ? JSON.parse(resBody) : resBody) : undefined);
+                            })
+                        } else {
+                            res.status(proxyRes.statusCode).send(resBody?.length > 0 ? (/application\/json/.test(ctype) ? JSON.parse(resBody) : resBody) : undefined);
+                        }
+                    } else {
+                        res.status(proxyRes.statusCode).send(resBody?.length > 0 ? (/application\/json/.test(ctype) ? JSON.parse(resBody) : resBody) : undefined);
+                    }
                 }
             });
         });
