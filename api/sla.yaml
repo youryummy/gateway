@@ -10,30 +10,100 @@ metrics:
 plans:
   base:
     rates:
-      /api/v1/example:
-        get:
-          requests:
-          - max: 1
-            period: second
+      /api/v1/recipes:
         post:
           requests:
-          - max: 2
-            period: second
-    quotas:
-      /api/v1/example:
-        get:
-          requests:
-          - max: 2
+          - max: 6
             period: minute
-      /api/v1/example/{param}:
-        get:
+      /api/v1/ratings:
+        post:
           requests:
-          - max: 2
+          - max: 10
             period: minute
-  premium:     
+      /api/v1/ingredients:
+        post:
+          requests:
+          - max: 6
+            period: minute
     quotas:
-      /api/v1/example:
-        get:
+      /api/v1/recipes:
+        post:
           requests:
           - max: 5
+            period: day
+      /api/v1/ratings:
+        post:
+          requests:
+          - max: 4
+            period: day
+      /api/v1/ingredients:
+        post:
+          requests:
+          - max: 5
+            period: day
+  advanced:
+    rates:
+      /api/v1/recipes:
+        post:
+          requests:
+          - max: 12
             period: minute
+      /api/v1/ratings:
+        post:
+          requests:
+          - max: 15
+            period: minute
+      /api/v1/ingredients:
+        post:
+          requests:
+          - max: 12
+            period: minute
+    quotas:
+      /api/v1/recipes:
+        post:
+          requests:
+          - max: 15
+            period: day
+      /api/v1/ratings:
+        post:
+          requests:
+          - max: 12
+            period: day
+      /api/v1/ingredients:
+        post:
+          requests:
+          - max: 450
+            period: month
+      /api/v1/events:
+        post:
+          requests:
+          - max: 25
+            period: day
+  premium:
+    rates:
+      /api/v1/recipes:
+        post:
+          requests:
+          - max: 18
+            period: minute
+      /api/v1/ratings:
+        post:
+          requests:
+          - max: 20
+            period: minute
+      /api/v1/ingredients:
+        post:
+          requests:
+          - max: 18
+            period: minute
+    quotas:
+      /api/v1/ingredients:
+        get:
+          requests:
+          - max: 30
+            period: day
+      /api/v1/events:
+        post:
+          requests:
+          - max: 50
+            period: day
